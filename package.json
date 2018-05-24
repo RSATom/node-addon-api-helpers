@@ -1,0 +1,22 @@
+{
+	"name": "node-addon-api-helpers",
+	"version": "0.3.0",
+	"license": "MIT",
+	"author": "Sergey Radionov <rsatom@gmail.com>",
+	"bugs": {
+		"url": "https://github.com/RSATom/node-addon-api-helpers/issues"
+	},
+	"description": "small set of functions intended to simplify use of node-addon-api",
+	"homepage": "https://github.com/RSATom/node-addon-api-helpers",
+	"keywords": [
+		"node-addon-api",
+		"node",
+		"electron",
+		"napi",
+		"c++"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RSATom/node-addon-api-helpers.git"
+	}
+}
