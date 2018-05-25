@@ -33,13 +33,13 @@ inline int FromJsValue<int>(const Napi::Value& value)
 }
 
 template <class T>
-T FromNumber(const Napi::Number& value, typename std::enable_if<sizeof(T) < 64, T>::type* = nullptr)
+typename std::enable_if<sizeof(T) < 64, T>::type FromNumber(const Napi::Number& value)
 {
 	return value.Int32Value();
 }
 
 template <class T>
-T FromNumber(const Napi::Number& value, typename std::enable_if<sizeof(T) == 64, T>::type* = nullptr)
+typename std::enable_if<sizeof(T) == 64, T>::type FromNumber(const Napi::Number& value)
 {
 	return value.Int64Value();
 }
