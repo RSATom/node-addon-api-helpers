@@ -32,6 +32,24 @@ inline int FromJsValue<int>(const Napi::Value& value)
 	return value.ToNumber();
 }
 
+template <class T>
+T FromNumber(const Napi::Number& value, typename std::enable_if<sizeof(T) < 64, T>::type* = nullptr)
+{
+	return value.Int32Value();
+}
+
+template <class T>
+T FromNumber(const Napi::Number& value, typename std::enable_if<sizeof(T) == 64, T>::type* = nullptr)
+{
+	return value.Int64Value();
+}
+
+template<>
+inline long FromJsValue<long>(const Napi::Value& value)
+{
+	return FromNumber<long>(value.ToNumber());
+}
+
 template<>
 inline double FromJsValue<double>(const Napi::Value& value)
 {
