@@ -94,15 +94,24 @@ inline Napi::Value ToJsValue(const napi_env& env, const std::string& value)
 }
 
 
-template<typename T>
-inline T AdjustValue(T x)
+template<typename T1, typename T2>
+inline T1 AdjustValue(const T2& x)
 {
 	return x;
 }
 
-inline const char* AdjustValue(const std::string& x)
+template<>
+inline const char*
+AdjustValue<const char*, std::string>(const std::string& x)
 {
 	return x.c_str();
+}
+
+template<>
+inline const unsigned char*
+AdjustValue<const unsigned char*, std::string>(const std::string& x)
+{
+	return reinterpret_cast<const unsigned char*>(x.c_str());
 }
 
 
@@ -119,10 +128,10 @@ Napi::Value CallMethod(
 	C* instance =  Napi::ObjectWrap<C>::Unwrap(callbackInfo.This().As<Napi::Object>());
 
 	(instance->*method) (
-		AdjustValue(
+		AdjustValue<A>(
 			FromJsValue<
 				std::conditional<
-					std::is_same<A, const char*>::value,
+					std::is_same<A, const char*>::value || std::is_same<A, const unsigned char*>::value,
 					std::string,
 					typename std::remove_const<
 						typename std::remove_reference<A>::type>::type
@@ -147,10 +156,10 @@ Napi::Value CallMethod(
 	return
 		ToJsValue(env,
 			(instance->*method) (
-				AdjustValue(
+				AdjustValue<A>(
 					FromJsValue<
 						std::conditional<
-							std::is_same<A, const char*>::value,
+							std::is_same<A, const char*>::value || std::is_same<A, const unsigned char*>::value,
 							std::string,
 							typename std::remove_const<
 								typename std::remove_reference<A>::type>::type
