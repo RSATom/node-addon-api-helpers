@@ -70,6 +70,13 @@ ToJsValue(const napi_env& env, const T& value)
 	return Napi::Value::From(env, static_cast<std::underlying_type<T>::type>(value));
 }
 
+template<typename T>
+const typename std::enable_if<std::is_base_of<Napi::Value, T>::value, Napi::Value>::type
+inline ToJsValue(const napi_env& env, const T& value)
+{
+	return Napi::Value::From(env, value);
+}
+
 inline Napi::Value ToJsValue(const napi_env& env, bool value)
 {
 	return Napi::Boolean::New(env, value);
