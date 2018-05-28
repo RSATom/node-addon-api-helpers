@@ -63,9 +63,11 @@ inline std::string FromJsValue<std::string>(const Napi::Value& value)
 }
 
 
-inline Napi::Value ToJsValue(const Napi::Value& value)
+template<typename T>
+inline typename const std::enable_if<std::is_enum<T>::value, Napi::Value>::type
+ToJsValue(const napi_env& env, const T& value)
 {
-	return value;
+	return Napi::Value::From(env, static_cast<std::underlying_type<T>::type>(value));
 }
 
 inline Napi::Value ToJsValue(const napi_env& env, bool value)
