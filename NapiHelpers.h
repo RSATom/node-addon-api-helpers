@@ -141,6 +141,33 @@ Napi::Value CallMethod(
 	return Napi::Value();
 };
 
+template<typename C, typename ... A, size_t ... I>
+Napi::Value CallMethod(
+	void (C::* method) (const napi_env& env, A ...),
+	const napi_env& env,
+	const napi_callback_info& info,
+	StaticSequence<I ...>)
+{
+	Napi::HandleScope scope(env);
+
+	Napi::CallbackInfo callbackInfo(env, info);
+	C* instance =  Napi::ObjectWrap<C>::Unwrap(callbackInfo.This().As<Napi::Object>());
+
+	(instance->*method) (
+		env,
+		AdjustValue<A>(
+			FromJsValue<
+				std::conditional<
+					std::is_same<A, const char*>::value || std::is_same<A, const unsigned char*>::value,
+					std::string,
+					typename std::remove_const<
+						typename std::remove_reference<A>::type>::type
+					>::type
+				>(callbackInfo[I])) ...);
+
+	return Napi::Value();
+};
+
 template<typename R, typename C, typename ... A, size_t ... I>
 Napi::Value CallMethod(
 	R (C::* method) (A ...),
@@ -167,9 +194,46 @@ Napi::Value CallMethod(
 						>(callbackInfo[I])) ...));
 };
 
+template<typename R, typename C, typename ... A, size_t ... I>
+Napi::Value CallMethod(
+	R (C::* method) (const napi_env& env, A ...),
+	const napi_env& env,
+	const napi_callback_info& info,
+	StaticSequence<I ...>)
+{
+	Napi::HandleScope scope(env);
+
+	Napi::CallbackInfo callbackInfo(env, info);
+	C* instance =  Napi::ObjectWrap<C>::Unwrap(callbackInfo.This().As<Napi::Object>());
+
+	return
+		ToJsValue(env,
+			(instance->*method) (
+				env,
+				AdjustValue<A>(
+					FromJsValue<
+						std::conditional<
+							std::is_same<A, const char*>::value || std::is_same<A, const unsigned char*>::value,
+							std::string,
+							typename std::remove_const<
+								typename std::remove_reference<A>::type>::type
+							>::type
+						>(callbackInfo[I])) ...));
+};
+
 template<typename R, typename C, typename ... A>
 napi_value CallMethod(
 	R (C::* method) (A ...),
+	const napi_env& env,
+	const napi_callback_info& info)
+{
+	typedef typename MakeStaticSequence<sizeof ... ( A )>::SequenceType SequenceType;
+	return CallMethod(method, env, info, SequenceType());
+}
+
+template<typename R, typename C, typename ... A>
+napi_value CallMethod(
+	R (C::* method) (const napi_env& env, A ...),
 	const napi_env& env,
 	const napi_callback_info& info)
 {
