@@ -15,6 +15,12 @@ inline Napi::Value FromJsValue<Napi::Value>(const Napi::Value& value)
 }
 
 template<>
+inline Napi::Function FromJsValue<Napi::Function>(const Napi::Value& value)
+{
+	return value.As<Napi::Function>();
+}
+
+template<>
 inline bool FromJsValue<bool>(const Napi::Value& value)
 {
 	return value.ToBoolean();
