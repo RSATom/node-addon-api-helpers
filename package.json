@@ -1,6 +1,6 @@
 {
 	"name": "node-addon-api-helpers",
-	"version": "0.7.0",
+	"version": "0.8.0",
 	"license": "MIT",
 	"author": "Sergey Radionov <rsatom@gmail.com>",
 	"bugs": {
