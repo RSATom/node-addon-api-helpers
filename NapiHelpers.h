@@ -69,11 +69,13 @@ inline std::string FromJsValue<std::string>(const Napi::Value& value)
 }
 
 
+#if 1
+
 template<typename T>
-inline typename const std::enable_if<std::is_enum<T>::value, Napi::Value>::type
+inline const typename std::enable_if<std::is_enum<T>::value, Napi::Value>::type
 ToJsValue(const napi_env& env, const T& value)
 {
-	return Napi::Value::From(env, static_cast<std::underlying_type<T>::type>(value));
+	return Napi::Value::From(env, static_cast<typename std::underlying_type<T>::type>(value));
 }
 
 template<typename T>
@@ -82,6 +84,22 @@ inline ToJsValue(const napi_env& env, const T& value)
 {
 	return Napi::Value::From(env, value);
 }
+
+#else
+
+template<typename T>
+inline T ToJsValue(const napi_env& env, const T& value, typename std::enable_if<std::is_enum<T>::value>::type* = 0)
+{
+	return Napi::Value::From(env, static_cast<typename std::underlying_type<T>::type>(value));
+}
+
+template<typename T>
+inline T ToJsValue(const napi_env& env, const T& value, typename std::enable_if<std::is_base_of<Napi::Value, T>::value>::type* = 0)
+{
+	return Napi::Value::From(env, value);
+}
+
+#endif
 
 inline Napi::Value ToJsValue(const napi_env& env, bool value)
 {
@@ -107,6 +125,18 @@ inline Napi::Value ToJsValue(const napi_env& env, const std::string& value)
 {
 	return Napi::String::New(env, value);
 }
+
+/*
+inline Napi::Value ToJsValue(const napi_env& env, const char* value)
+{
+	return Napi::String::New(env, value);
+}
+
+inline Napi::Value ToJsValue(const napi_env& env, const unsigned char* value)
+{
+	return Napi::String::New(env, reinterpret_cast<const char*>(value));
+}
+*/
 
 
 template<typename T1, typename T2>
@@ -200,7 +230,7 @@ Napi::Value CallMethod(
 			(instance->*method) (
 				AdjustValue<A>(
 					FromJsValue<
-						std::conditional<
+						typename std::conditional<
 							std::is_same<A, const char*>::value || std::is_same<A, const unsigned char*>::value,
 							std::string,
 							typename std::remove_const<
@@ -227,7 +257,7 @@ Napi::Value CallMethod(
 				env,
 				AdjustValue<A>(
 					FromJsValue<
-						std::conditional<
+						typename std::conditional<
 							std::is_same<A, const char*>::value || std::is_same<A, const unsigned char*>::value,
 							std::string,
 							typename std::remove_const<
