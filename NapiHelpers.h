@@ -184,7 +184,7 @@ Napi::Value CallMethod(
 				>(callbackInfo[I])) ...);
 
 	return Napi::Value();
-};
+}
 
 template<typename C, typename ... A, size_t ... I>
 Napi::Value CallMethod(
@@ -211,7 +211,7 @@ Napi::Value CallMethod(
 				>(callbackInfo[I])) ...);
 
 	return Napi::Value();
-};
+}
 
 template<typename R, typename C, typename ... A, size_t ... I>
 Napi::Value CallMethod(
@@ -237,7 +237,7 @@ Napi::Value CallMethod(
 								typename std::remove_reference<A>::type>::type
 							>::type
 						>(callbackInfo[I])) ...));
-};
+}
 
 template<typename R, typename C, typename ... A, size_t ... I>
 Napi::Value CallMethod(
@@ -264,7 +264,7 @@ Napi::Value CallMethod(
 								typename std::remove_reference<A>::type>::type
 							>::type
 						>(callbackInfo[I])) ...));
-};
+}
 
 template<typename R, typename C, typename ... A>
 napi_value CallMethod(
@@ -300,7 +300,7 @@ inline napi_property_descriptor ClassMethod(
 	descriptor.attributes = attributes;
 	descriptor.data = data;
 	return descriptor;
-};
+}
 
 #define CLASS_METHOD(name, member) \
 	ClassMethod(name, \
