@@ -111,6 +111,11 @@ inline Napi::Value ToJsValue(const napi_env& env, int value)
 	return Napi::Number::New(env, value);
 }
 
+inline Napi::Value ToJsValue(const napi_env& env, long value)
+{
+	return Napi::Number::New(env, value);
+}
+
 inline Napi::Value ToJsValue(const napi_env& env, unsigned value)
 {
 	return Napi::Number::New(env, value);
@@ -175,7 +180,7 @@ Napi::Value CallMethod(
 	(instance->*method) (
 		AdjustValue<A>(
 			FromJsValue<
-				std::conditional<
+				typename std::conditional<
 					std::is_same<A, const char*>::value || std::is_same<A, const unsigned char*>::value,
 					std::string,
 					typename std::remove_const<
@@ -202,7 +207,7 @@ Napi::Value CallMethod(
 		env,
 		AdjustValue<A>(
 			FromJsValue<
-				std::conditional<
+				typename std::conditional<
 					std::is_same<A, const char*>::value || std::is_same<A, const unsigned char*>::value,
 					std::string,
 					typename std::remove_const<
