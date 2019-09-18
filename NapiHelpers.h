@@ -131,12 +131,12 @@ inline Napi::Value ToJsValue(const napi_env& env, const std::string& value)
 	return Napi::String::New(env, value);
 }
 
-/*
 inline Napi::Value ToJsValue(const napi_env& env, const char* value)
 {
 	return Napi::String::New(env, value);
 }
 
+/*
 inline Napi::Value ToJsValue(const napi_env& env, const unsigned char* value)
 {
 	return Napi::String::New(env, reinterpret_cast<const char*>(value));
